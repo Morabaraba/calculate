@@ -14,42 +14,51 @@ def index():
     return render_template('index.html', version = app.config['VERSION'])
     
 
-@app.route('/ajax/addition')
+def get_numbers():
+    if request.method == 'POST':
+        number1 = request.json.get('number1')
+        number2 = request.json.get('number2')
+    else:
+        number1 = request.args.get("number1")
+        number2 = request.args.get("number2")
+    return (number1, number2, )
+
+
+@app.route('/ajax/addition', methods=['GET', 'POST'])
 def ajax_addition():
-    number1 = request.args.get("number1")
-    number2 = request.args.get("number2")
+    (number1, number2) = get_numbers()
     return jsonify({'answer': Calculator.addition(number1=number1, number2=number2)})
 
 
-@app.route('/ajax/subtraction')
+@app.route('/ajax/subtraction', methods=['GET', 'POST'])
 def ajax_subtraction():
     number1 = request.args.get("number1")
     number2 = request.args.get("number2")
     return jsonify({'answer': Calculator.subtraction(number1=number1, number2=number2)})
 
 
-@app.route('/ajax/multiplication')
+@app.route('/ajax/multiplication', methods=['GET', 'POST'])
 def ajax_multiplication():
     number1 = request.args.get("number1")
     number2 = request.args.get("number2")
     return jsonify({'answer': Calculator.multiplication(number1=number1, number2=number2)})
 
 
-@app.route('/ajax/division')
+@app.route('/ajax/division', methods=['GET', 'POST'])
 def ajax_division():
     number1 = request.args.get("number1")
     number2 = request.args.get("number2")
     return jsonify({'answer': Calculator.division(number1=number1, number2=number2)})
     
 
-@app.route('/ajax/modulo')
+@app.route('/ajax/modulo', methods=['GET', 'POST'])
 def ajax_modulo():
     number1 = request.args.get("number1")
     number2 = request.args.get("number2")
     return jsonify({'answer': Calculator.modulo(number1=number1, number2=number2)})
 
 
-@app.route('/ajax/sqrt')
+@app.route('/ajax/sqrt', methods=['GET', 'POST'])
 def ajax_sqrt():
     number1 = request.args.get("number1")
     number2 = '1' # fake number
