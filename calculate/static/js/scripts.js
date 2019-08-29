@@ -53,6 +53,7 @@
     }
 
     function setOperation(val) {
+        
         switch (val) {
             case '+':
                 calculator.operation = 'addition'
@@ -78,7 +79,16 @@
             default:
                 // code block
         }
-
+        
+        if (calculator.waitingForNumber2) {
+            calculator.number2 = calculator.display
+            ajaxOperation()    
+            calculator.waitingForNumber2 = false
+        } else {
+            calculator.number1 = calculator.display
+            calculator.waitingForNumber2 = true
+        }
+            
     }
 
     function resetCalculator() {
@@ -93,13 +103,29 @@
 
         if (calculator.waitingForNumber2 === true) {
             calculator.display = number
-            calculator.waitingForNumber2 = false
+            //calculator.waitingForNumber2 = false
         }
         else {
             calculator.display = calculator.display === '0' ? number : calculator.display + number
         }
     }
 
+    function ajaxOperation() {
+        var model = new Backbone.Model({
+            number1: calculator.number1, 
+            number2: calculator.number2
+        })
+        model.url = '/ajax/' + calculator.operation
+        
+        model.on('sync', function (model, response, options) {
+            debugger    
+        })
+        model.on('error', function (model, response, options) {
+            debugger    
+        })     
+        debugger
+        model.sync()
+    }
     function main() {
         calculator.$display = $('.calculator-screen')
         refreshDisplay()
