@@ -1,17 +1,17 @@
-from flask import Flask, escape, request, jsonify
+from flask import Flask, request, jsonify, render_template
+from time import time
 
-from .flask_utils import  DecimalEncoder
+from .flask_utils import DecimalEncoder
 from .calculator import Calculator
 
 
 app = Flask(__name__)
 app.json_encoder = DecimalEncoder
-
+app.config['VERSION'] = int(time())
 
 @app.route('/')
 def index():
-    name = request.args.get("name", "World")
-    return f'Hello, {escape(name)}!'
+    return render_template('index.html', version = app.config['VERSION'])
     
 
 @app.route('/ajax/addition')

@@ -64,7 +64,6 @@ def test_ajax_division(client):
     assert result['answer'] == '0.5'
 
 
-
 def test_ajax_division(client):
     """Test our ajax division call"""
 
@@ -73,7 +72,6 @@ def test_ajax_division(client):
     
     assert result['answer'] == '1'
     
-
 
 
 def test_ajax_sqrt(client):
