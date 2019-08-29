@@ -1,5 +1,5 @@
 from decimal import Decimal
-
+from math import sqrt
 
 def ensure_decimal(func): 
     '''Ensure kwargs `number1` and `number2` is always of datatype Decimal'''
@@ -18,13 +18,27 @@ class Calculator:
         return number1 + number2
     
     @classmethod
+    @ensure_decimal
     def subtraction(cls, number1, number2):
         return number1 - number2
     
     @classmethod
+    @ensure_decimal
     def multiplication(cls, number1, number2):
         return number1 * number2
     
     @classmethod
+    @ensure_decimal
     def division(cls, number1, number2):
         return number1 / number2
+
+    @classmethod
+    @ensure_decimal
+    def modulo(cls, number1, number2):
+        return number1 % number2
+        
+    @classmethod
+    @ensure_decimal
+    def sqrt(cls, number1, number2):
+        return sqrt(number1)
+    
