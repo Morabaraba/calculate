@@ -9,7 +9,7 @@ input_operations = '+-*/'
 input_equal = '='
 
 complex_operations = '*/'
-simple_operations = '+1'
+simple_operations = '+-'
 
 states = ['initial', 'transition_from_initial', 'transition', 'transition_from_transition', 'trailing', 'transition_from_trailing', 'equal']
 
@@ -48,7 +48,7 @@ transitions = [
 class Calculator(object):
 
 	def __init__(self):
-		self.after_initial()
+		self.after_initial(event=None)
 
 
 	# after transitions
@@ -67,24 +67,25 @@ class Calculator(object):
 		self.number2 = '0'
 
 	def after_number1(self, event):
-		self.number1 = '0' + event.number
+		self.number1 = self.number1 + event.kwargs['number'] if self.number1 != '0' else event.kwargs['number']
 		self.display = self.number1
 
 	def after_number2(self, event):
-		self.number2 =  event.number
+		self.number2 = self.number2 + event.kwargs['number'] if self.number2 != '0' else event.kwargs['number']
+		self.display = self.number2
 
 	def after_operation1(self, event):
-		self.operation1 = event.operation
+		self.operation1 = event.kwargs['operation']
 		self.number2 = self.number1
 		self.display = self.number1
 
 	def after_operation2(self, event):
-		self.operation1 = event.operation
+		self.operation1 = event.kwargs['operation']
 		self.perform_operation()
 		self.display = self.number1
 
 	def after_operation_trailing(self, event):
-		self.operation2 = event.operation
+		self.operation2 = event.kwargs['operation']
 		self.trailing = self.number2
 
 	def after_equal(self, event):
