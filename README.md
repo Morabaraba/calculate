@@ -2,7 +2,7 @@
 
 ### Goal
 
-Create a calculator using [Flask](https://palletsprojects.com/p/flask/) with a front-end([backbonejs](https://backbonejs.org/)).
+Create a calculator using [Flask](https://palletsprojects.com/p/flask/) with front-end test([qunit](https://qunitjs.com/)).
 
 ### Requirements
 
