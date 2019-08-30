@@ -8,18 +8,17 @@
         number2: undefined,
         waitingForNumber2: false,
         operation: undefined,
+        chainOpreration: false,
 
         $display: undefined,
         $keys: undefined
     }
 
-    function refreshDisplay() {
-        calculator.$display.val(calculator.display)
+    function refreshDisplay(display) {
+        calculator.$display.val(display || calculator.display)
     }
 
     function inputDecimal(dot) {
-        if (calculator.waitingForNumber2 === true) return
-
         if (!_.include(calculator.display, dot)) {
             calculator.display += dot
         }
@@ -53,7 +52,7 @@
     }
 
     function setOperation(val) {
-        
+        calculator.chainOpreration = true
         switch (val) {
             case '+':
                 calculator.operation = 'addition'
@@ -74,36 +73,54 @@
                 calculator.operation = 'sqrt'
                 break
             case '=':
-                // code block
+
+                if (calculator.operation) {
+                    calculator.chainOpreration = false
+                } else if (calculator.waitingForNumber2) {
+                    // pass
+                }
+                else {
+                    resetCalculator(calculator.display)
+                    return
+                }
                 break
             default:
-                // code block
+                console.error('no operation selected')
+                alert('no operation selected')
+                return
         }
-        
+
         if (calculator.waitingForNumber2) {
             calculator.number2 = calculator.display
-            ajaxOperation()    
-            calculator.waitingForNumber2 = false
-        } else {
+            if (calculator.operation)
+                ajaxOperation()
+        }
+        else {
             calculator.number1 = calculator.display
             calculator.waitingForNumber2 = true
+            calculator.display = '0'
         }
-            
+
     }
 
-    function resetCalculator() {
+    function resetCalculator(display) {
+        refreshDisplay(display)
         calculator.display = '0'
         calculator.number1 = undefined
         calculator.number2 = undefined
         calculator.waitingForNumber2 = false
         calculator.operation = undefined
+        calculator.chainOpreration = false
+        
     }
 
     function inputNumber(number) {
-
         if (calculator.waitingForNumber2 === true) {
-            calculator.display = number
-            //calculator.waitingForNumber2 = false
+            if (calculator.chainOpreration === true) {
+                calculator.chainOpreration = false
+                calculator.display = '0'
+            }
+            calculator.display = calculator.display === '0' ? number : calculator.display + number
         }
         else {
             calculator.display = calculator.display === '0' ? number : calculator.display + number
@@ -112,25 +129,48 @@
 
     function ajaxOperation() {
         var model = new Backbone.Model({
-            number1: calculator.number1, 
+            number1: calculator.number1,
             number2: calculator.number2
         })
-        model.url = '/ajax/' + calculator.operation
-        
-        model.on('sync', function (model, response, options) {
-            debugger    
+        model.url = 'ajax/' + calculator.operation
+
+        model.on('sync', function(model, response, options) {
+            if (response.answer) {
+                if (calculator.chainOpreration)
+                    nextOprerationNumber(response.answer)
+                else
+                    resetCalculator(response.answer)
+            }
+            else {
+                console.error(response)
+                alert('No answer returned from server, sorry.')
+            }
         })
-        model.on('error', function (model, response, options) {
-            debugger    
-        })     
-        debugger
-        model.sync()
+
+        model.on('error', function(model, response, options) {
+            console.error(response)
+            alert('Error returned from server, sorry.')
+        })
+
+        model.save()
     }
+
+    function nextOprerationNumber(number1) {
+        calculator.number1 = number1
+        calculator.number2 = undefined
+        
+        calculator.operation = undefined
+        
+        calculator.chainOpreration = true
+        calculator.display = number1
+        refreshDisplay()
+    }
+
     function main() {
         calculator.$display = $('.calculator-screen')
         refreshDisplay()
 
-        calculator.$keys = $('.calculator-keys')
+        calculator.$keys = $('.calculator-keys').find('button')
         setupKeys()
     }
 
