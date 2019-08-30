@@ -13,7 +13,7 @@ app.config['VERSION'] = int(time())
 def index():
     return render_template('qunit.html', version = app.config['VERSION'])
 
-@app.route('/')
+@app.route('/test')
 def test():
     return render_template('qunit.html', version = app.config['VERSION'])
 
