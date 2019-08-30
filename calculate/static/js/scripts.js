@@ -73,7 +73,6 @@
                 calculator.operation = 'sqrt'
                 break
             case '=':
-
                 if (calculator.operation) {
                     calculator.chainOpreration = false
                 } else if (calculator.waitingForNumber2) {
