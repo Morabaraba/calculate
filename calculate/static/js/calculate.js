@@ -2,13 +2,8 @@
 
 var Calculator = function() {
     var self = this
-    self.number1 = undefined
-    self.number2 = undefined
-    self.waitingForNumber2 = false
-    self.operation = undefined
-    self.operationPrev = undefined
-    self.operationReset = undefined
     _.extend(self, Backbone.Events);
+    self.reset()
 }
 
 Calculator.prototype.setOperation = function(val) {
@@ -60,6 +55,11 @@ Calculator.prototype.performOperation = function(number1, number2) {
         throw new Error('No number given')
     }
 
+    if (self.operation == 'equal') {
+        self.trigger('error', self, number1, number2, 'Select operation')
+        throw new Error('No equal operation')
+    }
+    
     var model = new Backbone.Model({
         number1: number1,
         number2: number2
@@ -70,6 +70,7 @@ Calculator.prototype.performOperation = function(number1, number2) {
         if (response.answer) {
             self.number1 = response.answer
             self.number2 = undefined
+            self.operationPrev = undefined
             if (self.operationReset) {
                 self.operation = self.operationReset
                 self.operationReset = undefined
@@ -82,21 +83,20 @@ Calculator.prototype.performOperation = function(number1, number2) {
     })
 
     model.on('error', function(model, response, options) {
-        console.error(response)
-        self.trigger('error', self, number1, number2, response)
+        //console.error(response)
+        self.trigger('error', self, number1, number2, 'server error', response)
         throw new Error('server error')
     })
 
     model.save()
 }
 
-
 Calculator.prototype.checkState = function() {
     var self = this
     
     if (!self.waitingForNumber2) {
         self.waitingForNumber2 = true
-        return
+        return false
     }
 
     switch (self.operation) {
@@ -121,8 +121,9 @@ Calculator.prototype.checkState = function() {
         case 'equal':
             if (!self.number2) {
                 self.waitingForNumber2 = false
+                self.operationPrev = undefined
                 self.trigger('answer', self, self.number1, self.number2)
-                return 
+                return true
             }
             self.operationReset = 'equal'
             self.operation = self.operationPrev
@@ -132,4 +133,15 @@ Calculator.prototype.checkState = function() {
         default:
             throw new Error('No state operation selected')
     }
+    return true
+}
+
+Calculator.prototype.reset = function() {
+    var self = this
+    self.number1 = undefined
+    self.number2 = undefined
+    self.waitingForNumber2 = false
+    self.operation = undefined
+    self.operationPrev = undefined
+    self.operationReset = undefined
 }
