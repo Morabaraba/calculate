@@ -12,7 +12,10 @@ app.config['VERSION'] = int(time())
 @app.route('/')
 def index():
     return render_template('index.html', version = app.config['VERSION'])
-    
+
+@app.route('/test')
+def test():
+    return render_template('qunit.html', version = app.config['VERSION'])
 
 def get_numbers():
     if request.method == 'POST':
