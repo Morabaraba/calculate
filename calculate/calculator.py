@@ -8,6 +8,9 @@ input_numbers = '0123456789.'
 input_operations = '+-*/'
 input_equal = '='
 
+complex_operations = '*/'
+simple_operations = '+1'
+
 states = ['initial', 'transition_from_initial', 'transition', 'transition_from_transition', 'trailing', 'transition_from_trailing', 'equal']
 
 transitions = [
@@ -25,10 +28,19 @@ transitions = [
 	{ 'trigger': 'equal', 'source': 'transition_from_initial', 'dest': 'equal', 'after': 'after_equal' },
 
 	# state 3: transition
-	{ 'trigger': 'reset', 'source': 'transition', 'dest': 'transition_from_initial', 'after': 'after_reset' },
+	{ 'trigger': 'reset', 'source': 'transition', 'dest': 'transition_from_initial', 'after': 'after_reset1' },
 	{ 'trigger': 'number', 'source': 'transition', 'dest': 'transition_from_transition', 'after': 'after_number2' },
 	{ 'trigger': 'operation', 'source': 'transition', 'dest': 'transition', 'after': 'after_operation' },
 	{ 'trigger': 'equal', 'source': 'transition', 'dest': 'equal', 'after': 'after_equal' },
+
+	# state 4: transition_from_transition
+	{ 'trigger': 'reset', 'source': 'transition_from_transition', 'dest': 'transition_from_transition', 'conditions': 'is_number2_not_zero', 'after': 'after_reset2' },
+	{ 'trigger': 'reset', 'source': 'transition_from_transition', 'dest': 'initial', 'conditions': 'is_number2_zero', 'after': 'after_initial' },
+	{ 'trigger': 'number', 'source': 'transition_from_transition', 'dest': 'transition_from_transition', 'after': 'after_number2' },
+	{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'transition', 'conditions': 'is_operation_simple', 'after': 'after_operation2' },
+	{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'transition', 'conditions': 'is_operation_complex', 'after': 'after_operation2' },
+	{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'transition', 'conditions': 'is_operation_trailing', 'after': 'after_operation_trailing' },
+	{ 'trigger': 'equal', 'source': 'transition_from_transition', 'dest': 'equal', 'after': 'after_equal' },
 ]
 
 
@@ -48,8 +60,11 @@ class Calculator(object):
 		self.number_trailing = '0'
 		self.display = self.number1
 
-	def after_reset(self, event):
+	def after_reset1(self, event):
 		self.number1 = '0'
+
+	def after_reset2(self, event):
+		self.number2 = '0'
 
 	def after_number1(self, event):
 		self.number1 = '0' + event.number
@@ -58,10 +73,19 @@ class Calculator(object):
 	def after_number2(self, event):
 		self.number2 =  event.number
 
-	def after_operation(self, event):
+	def after_operation1(self, event):
 		self.operation1 = event.operation
 		self.number2 = self.number1
 		self.display = self.number1
+
+	def after_operation2(self, event):
+		self.operation1 = event.operation
+		self.perform_operation()
+		self.display = self.number1
+
+	def after_operation_trailing(self, event):
+		self.operation2 = event.operation
+		self.trailing = self.number2
 
 	def after_equal(self, event):
 		self.perform_operation()
@@ -73,6 +97,22 @@ class Calculator(object):
 
 	def is_number1_zero(self, event):
 		return self.number1 == '0'
+
+	def is_number2_not_zero(self, event):
+		return self.number2 != '0'
+
+	def is_number2_zero(self, event):
+		return self.number2 == '0'
+
+	def is_operation_simple(self, event):
+		return self.number2 == '0'
+
+	def is_operation_complex(self, event):
+		return self.number2 == '0' and self.operation1 in complex_operations
+
+	def is_operation_trailing(self, event):
+		return self.operation1 in simple_operations
+
 
 	# ...
 	def perform_operation(self):
