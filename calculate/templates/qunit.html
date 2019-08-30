@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>QUnit Test Suite</title>
 
-     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qunit/2.9.2/qunit.min.css" integrity="sha256-Fw0jDf1yRtYUvzViEPe1af0llOaLKaDJt69t08pNLgY=" crossorigin="anonymous" />
-     <script src="//cdnjs.cloudflare.com/ajax/libs/qunit/2.9.2/qunit.min.js" integrity="sha256-aHX3r/VJLziirvDfaqftpZJFlEDZ2ZD+RcBRw3+5rwE=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qunit/2.9.2/qunit.min.css" integrity="sha256-Fw0jDf1yRtYUvzViEPe1af0llOaLKaDJt69t08pNLgY=" crossorigin="anonymous" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/qunit/2.9.2/qunit.min.js" integrity="sha256-aHX3r/VJLziirvDfaqftpZJFlEDZ2ZD+RcBRw3+5rwE=" crossorigin="anonymous"></script>
 
-     <script src="static/js/calculate.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" integrity="sha256-G7A4JrJjJlFqP0yamznwPjAApIKPkadeHfyIwiaa9e0=" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.0/backbone.js"></script>
 
-     <script src="static/js/test.js"></script>
+    <script src="static/js/calculate.js?v={{version}}"></script>
+
+    <script src="static/js/test.js?v={{version}}"></script>
 </head>
+
 <body>
     <h1 id="qunit-header">QUnit Test Suite</h1>
     <h2 id="qunit-banner"></h2>
@@ -17,4 +23,5 @@
     <h2 id="qunit-userAgent"></h2>
     <ol id="qunit-tests">test markup, hidden.</ol>
 </body>
+
 </html>
