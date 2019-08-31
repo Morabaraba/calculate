@@ -39,8 +39,17 @@ transitions = [
 	{ 'trigger': 'number', 'source': 'transition_from_transition', 'dest': 'transition_from_transition', 'after': 'after_number2' },
 	{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'transition', 'conditions': 'is_operation_simple', 'after': 'after_operation2' },
 	{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'transition', 'conditions': 'is_operation_complex', 'after': 'after_operation2' },
-	{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'transition', 'conditions': 'is_operation_trailing', 'after': 'after_operation_trailing' },
+	{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'trailing', 'conditions': 'is_operation_trailing', 'after': 'after_operation_trailing' },
 	{ 'trigger': 'equal', 'source': 'transition_from_transition', 'dest': 'equal', 'after': 'after_equal' },
+	
+	# state 5: trailing
+	{ 'trigger': 'reset', 'source': 'trailing', 'dest': 'transition_from_trailing', 'conditions': 'is_number1_not_zero', 'after': 'after_initial' },
+	{ 'trigger': 'reset', 'source': 'trailing', 'dest': 'initial', 'conditions': 'is_number1_not_zero', 'after': 'after_initial' },
+	{ 'trigger': 'number', 'source': 'trailing', 'dest': 'transition_from_initial', 'after': 'after_number1' },
+	{ 'trigger': 'operation', 'source': 'trailing', 'dest': 'trailing', 'conditions': 'is_operation_complex', 'after': 'after_operation' },
+	{ 'trigger': 'operation', 'source': 'trailing', 'dest': 'transition', 'conditions': 'is_operation_complex', 'after': 'after_operation' },
+	{ 'trigger': 'equal', 'source': 'trailing', 'dest': 'equal', 'after': 'after_equal' },
+
 ]
 
 
