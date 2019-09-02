@@ -19,14 +19,14 @@ class Calculator(object):
 		{ 'trigger': 'number', 'source': 'initial', 'dest': 'transition_from_initial', 'after': 'after_number1' },
 		{ 'trigger': 'operation', 'source': 'initial', 'dest': 'transition', 'after': 'after_operation1' },
 		{ 'trigger': 'equal', 'source': 'initial', 'dest': 'equal', 'after': 'after_equal' },
-	
+
 		# state 2: transition_from_initial
 		{ 'trigger': 'reset', 'source': 'transition_from_initial', 'dest': 'transition_from_initial', 'conditions': 'is_number1_not_zero', 'after': 'after_initial' },
 		{ 'trigger': 'reset', 'source': 'transition_from_initial', 'dest': 'initial', 'conditions': 'is_number1_not_zero', 'after': 'after_initial' },
 		{ 'trigger': 'number', 'source': 'transition_from_initial', 'dest': 'transition_from_initial', 'after': 'after_number1' },
 		{ 'trigger': 'operation', 'source': 'transition_from_initial', 'dest': 'transition', 'after': 'after_operation1' },
 		{ 'trigger': 'equal', 'source': 'transition_from_initial', 'dest': 'equal', 'after': 'after_equal' },
-	
+
 		# state 3: transition
 		{ 'trigger': 'reset', 'source': 'transition', 'dest': 'transition_from_initial', 'after': 'after_reset1' },
 		{ 'trigger': 'number', 'source': 'transition', 'dest': 'transition_from_transition', 'after': 'after_number2' },
@@ -41,15 +41,27 @@ class Calculator(object):
 		{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'transition', 'conditions': 'is_operation_simple', 'after': 'after_operation2' },
 		{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'transition', 'conditions': 'is_operation_complex', 'after': 'after_operation2' },
 		{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'trailing', 'conditions': 'is_operation_trailing', 'after': 'after_operation_trailing' },
-		
-		
+
 		# state 5: trailing
 		{ 'trigger': 'equal', 'source': 'trailing', 'dest': 'equal', 'after': 'after_trailing_equal' },
-		{ 'trigger': 'reset', 'source': 'trailing', 'dest': 'transition_from_trailing', 'after': 'after_trailing_reset' },
+		{ 'trigger': 'reset', 'source': 'trailing', 'dest': 'transition_from_trailing', 'after': 'after_reset_trailing' },
 		{ 'trigger': 'number', 'source': 'trailing', 'dest': 'transition_from_trailing', 'after': 'after_number_trailing' },
 		{ 'trigger': 'operation', 'source': 'trailing', 'dest': 'trailing', 'conditions': 'is_operation_complex', 'after': 'after_operation2' },
 		{ 'trigger': 'operation', 'source': 'trailing', 'dest': 'transition', 'conditions': 'is_operation_simple', 'after': 'after_operation_trailing_simple' },
-		
+
+		# state 6: transition_from_trailing
+		{ 'trigger': 'reset', 'source': 'transition_from_trailing', 'dest': 'initial', 'conditions': 'is_number_trailing_zero', 'after': 'after_initial' },
+		{ 'trigger': 'reset', 'source': 'transition_from_trailing', 'dest': 'transition_from_trailing', 'conditions': 'is_number_trailing_not_zero', 'after': 'after_reset_trailing' },
+		{ 'trigger': 'number', 'source': 'transition_from_trailing', 'dest': 'transition_from_trailing', 'after': 'after_number_trailing' },
+		{ 'trigger': 'equal', 'source': 'transition_from_trailing', 'dest': 'equal', 'after': 'after_equal' },
+		{ 'trigger': 'operation', 'source': 'transition_from_trailing', 'dest': 'transition', 'conditions': 'is_operation_simple', 'after': 'after_operation_trailing_simple' },
+		{ 'trigger': 'operation', 'source': 'transition_from_trailing', 'dest': 'trailing', 'conditions': 'is_operation_complex', 'after': 'after_operation2' },
+
+		# state 7: equal
+		{ 'trigger': 'reset', 'source': 'equal', 'dest': 'transition_from_initial', 'after': 'after_reset1' },
+		{ 'trigger': 'number', 'source': 'equal', 'dest': 'transition_from_initial', 'after': 'after_number1' },
+		{ 'trigger': 'operation', 'source': 'equal', 'dest': 'transition', 'after': 'after_operation1' },
+		{ 'trigger': 'equal', 'source': 'equal', 'dest': 'equal', 'after': 'after_equal' },
 	]
 
 
@@ -114,7 +126,7 @@ class Calculator(object):
 		self.after_trailing_equal()
 		self.operation1 = event.kwargs['operation']
 
-	def after_trailing_reset(self, event):
+	def after_reset_trailing(self, event):
 		self.number_trailing = '0'
 
 
@@ -139,6 +151,12 @@ class Calculator(object):
 
 	def is_operation_trailing(self, event):
 		return self.operation1 in Calculator.simple_operations
+
+	def is_number_trailing_not_zero(self, event):
+		return self.number_trailing != '0'
+
+	def is_number_trailing_zero(self, event):
+		return self.number_trailing == '0'
 
 
 	# ...
