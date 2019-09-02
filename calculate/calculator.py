@@ -53,7 +53,7 @@ class Calculator(object):
 		{ 'trigger': 'reset', 'source': 'transition_from_trailing', 'dest': 'initial', 'conditions': 'is_number_trailing_zero', 'after': 'after_initial' },
 		{ 'trigger': 'reset', 'source': 'transition_from_trailing', 'dest': 'transition_from_trailing', 'conditions': 'is_number_trailing_not_zero', 'after': 'after_reset_trailing' },
 		{ 'trigger': 'number', 'source': 'transition_from_trailing', 'dest': 'transition_from_trailing', 'after': 'after_number_trailing' },
-		{ 'trigger': 'equal', 'source': 'transition_from_trailing', 'dest': 'equal', 'after': 'after_equal' },
+		{ 'trigger': 'equal', 'source': 'transition_from_trailing', 'dest': 'equal', 'after': 'after_trailing_equal' },
 		{ 'trigger': 'operation', 'source': 'transition_from_trailing', 'dest': 'transition', 'conditions': 'is_operation_simple', 'after': 'after_operation_trailing_simple' },
 		{ 'trigger': 'operation', 'source': 'transition_from_trailing', 'dest': 'trailing', 'conditions': 'is_operation_complex', 'after': 'after_operation2' },
 
