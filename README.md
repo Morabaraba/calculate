@@ -6,6 +6,7 @@ For the first attempt at this exercise please see the other [branch](//github.co
 
 - [ ] Create a calculator.
 - [ ] Model a basic calculator using a state machine and python.
+  -  [ ] Unit test state machine.
 - [ ] Model a basic calculator using a state machine and javascript.
 - [ ] Create a front-end for the modeled calculator.
 - [ ] Allow the front-end to interact with a back-end modeled calculator.

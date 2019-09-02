@@ -34,21 +34,22 @@ class Calculator(object):
 		{ 'trigger': 'equal', 'source': 'transition', 'dest': 'equal', 'after': 'after_equal' },
 	
 		# state 4: transition_from_transition
+		{ 'trigger': 'equal', 'source': 'transition_from_transition', 'dest': 'equal', 'after': 'after_equal' },
 		{ 'trigger': 'reset', 'source': 'transition_from_transition', 'dest': 'transition_from_transition', 'conditions': 'is_number2_not_zero', 'after': 'after_reset2' },
 		{ 'trigger': 'reset', 'source': 'transition_from_transition', 'dest': 'initial', 'conditions': 'is_number2_zero', 'after': 'after_initial' },
 		{ 'trigger': 'number', 'source': 'transition_from_transition', 'dest': 'transition_from_transition', 'after': 'after_number2' },
 		{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'transition', 'conditions': 'is_operation_simple', 'after': 'after_operation2' },
 		{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'transition', 'conditions': 'is_operation_complex', 'after': 'after_operation2' },
 		{ 'trigger': 'operation', 'source': 'transition_from_transition', 'dest': 'trailing', 'conditions': 'is_operation_trailing', 'after': 'after_operation_trailing' },
-		{ 'trigger': 'equal', 'source': 'transition_from_transition', 'dest': 'equal', 'after': 'after_equal' },
+		
 		
 		# state 5: trailing
-		{ 'trigger': 'reset', 'source': 'trailing', 'dest': 'transition_from_trailing', 'conditions': 'is_number1_not_zero', 'after': 'after_initial' },
-		{ 'trigger': 'reset', 'source': 'trailing', 'dest': 'initial', 'conditions': 'is_number1_not_zero', 'after': 'after_initial' },
-		{ 'trigger': 'number', 'source': 'trailing', 'dest': 'transition_from_initial', 'after': 'after_number1' },
-		{ 'trigger': 'operation', 'source': 'trailing', 'dest': 'trailing', 'conditions': 'is_operation_complex', 'after': 'after_operation1' },
-		{ 'trigger': 'operation', 'source': 'trailing', 'dest': 'transition', 'conditions': 'is_operation_complex', 'after': 'after_operation1' },
-		{ 'trigger': 'equal', 'source': 'trailing', 'dest': 'equal', 'after': 'after_equal' },
+		{ 'trigger': 'equal', 'source': 'trailing', 'dest': 'equal', 'after': 'after_trailing_equal' },
+		{ 'trigger': 'reset', 'source': 'trailing', 'dest': 'transition_from_trailing', 'after': 'after_trailing_reset' },
+		{ 'trigger': 'number', 'source': 'trailing', 'dest': 'transition_from_trailing', 'after': 'after_number_trailing' },
+		{ 'trigger': 'operation', 'source': 'trailing', 'dest': 'trailing', 'conditions': 'is_operation_complex', 'after': 'after_operation2' },
+		{ 'trigger': 'operation', 'source': 'trailing', 'dest': 'transition', 'conditions': 'is_operation_simple', 'after': 'after_operation_trailing_simple' },
+		
 	]
 
 
@@ -57,7 +58,7 @@ class Calculator(object):
 		self.after_initial(event=None)
 
 	def __str__(self):
-		return super().__str__() + f' = <number1 = {self.number1}; operation1 = {self.operation1}; number2 = {self.number2}; operation2 = {self.operation2}; number_trailing = {self.number_trailing}; display = {self.display}; state = {self.state}>'
+		return f'{super().__str__()} = <number1 = {self.number1}; operation1 = {self.operation1}; number2 = {self.number2}; operation2 = {self.operation2}; number_trailing = {self.number_trailing}; display = {self.display}; state = {self.state}>'
 
 	# after transitions
 	def after_initial(self, event):
@@ -89,17 +90,32 @@ class Calculator(object):
 
 	def after_operation2(self, event):
 		self.operation1 = event.kwargs['operation']
-		self.perform_operation()
+		self.number1 = self.perform_operation()
 		self.display = self.number1
-		
 
 	def after_operation_trailing(self, event):
 		self.operation2 = event.kwargs['operation']
 		self.trailing = self.number2
 
 	def after_equal(self, event):
-		self.perform_operation()
+		self.number1 = self.perform_operation()
 		self.display = self.number1
+
+	def after_number_trailing(self, event):
+		self.number_trailing = self.number_trailing + f'{event.kwargs["number"]}' if self.number_trailing != '0' else f'{event.kwargs["number"]}'
+		self.display = self.number_trailing
+
+	def after_trailing_equal(self, event):
+		self.number2 = self.perform_operation(number1 = self.number2, operation = self.operation2, number2 = self.number_trailing)
+		self.number1 = self.perform_operation()
+		self.display = self.number1
+
+	def after_operation_trailing_simple(self, event):
+		self.after_trailing_equal()
+		self.operation1 = event.kwargs['operation']
+
+	def after_trailing_reset(self, event):
+		self.number_trailing = '0'
 
 
 	# transition conditions
@@ -126,18 +142,25 @@ class Calculator(object):
 
 
 	# ...
-	def perform_operation(self):
-		if self.operation1 == '+':
-			number = Decimal(self.number1) + Decimal(self.number2)
-		elif self.operation1 == '-':
-			number = Decimal(self.number1) - Decimal(self.number2)
-		elif self.operation1 == '*':
-			number = Decimal(self.number1) * Decimal(self.number2)
-		elif self.operation1 == '/':
-			number = Decimal(self.number1) / Decimal(self.number2)
+	def perform_operation(self, number1 = None, operation = None, number2 = None):
+		if not number1:
+			number1 = self.number1
+		if not operation:
+			operation = self.operation1
+		if not number2:
+			number2 = self.number2
+
+		if operation == '+':
+			number = Decimal(number1) + Decimal(number2)
+		elif operation == '-':
+			number = Decimal(number1) - Decimal(number2)
+		elif operation == '*':
+			number = Decimal(number1) * Decimal(number2)
+		elif operation == '/':
+			number = Decimal(number1) / Decimal(number2)
 		else:
-			raise Exception('operation1 not valid')
-		self.number1 = f'{number}'
+			raise Exception(f'operation "{operation}" not valid')
+		return f'{number}'
 
 
 
