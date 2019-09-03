@@ -1,3 +1,5 @@
-pkg-resources==0.0.0
-six==1.12.0
-transitions==0.7.0
+-e . # install calculate as a editable package
+Click==7.0 # create beautiful command line interfaces
+graphviz==0.12 # rendering of graph descriptions 
+six==1.12.0 # Python 2 and 3 compatibility library
+transitions==0.7.0 # finite state machine
